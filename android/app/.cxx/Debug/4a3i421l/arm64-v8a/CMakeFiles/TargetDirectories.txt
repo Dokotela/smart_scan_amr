@@ -1,0 +1,2 @@
+/home/grey/dev/smart_scan_amr/android/app/.cxx/Debug/4a3i421l/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/grey/dev/smart_scan_amr/android/app/.cxx/Debug/4a3i421l/arm64-v8a/CMakeFiles/rebuild_cache.dir
