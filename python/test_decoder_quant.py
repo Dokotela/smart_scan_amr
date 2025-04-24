@@ -13,7 +13,7 @@ print("Decoder Outputs:", [(o.name, o.shape, o.type) for o in sess.get_outputs()
 
 # Dummy inputs
 input_ids = np.zeros((1, 1), dtype=np.int64)               # one BOS token
-encoder_hidden = np.zeros((1, 577, 768), dtype=np.float32)  # dummy encoder output
+encoder_hidden = np.zeros((1, 577, 384), dtype=np.float32)  # dummy encoder output
 
 # Run inference
 outputs = sess.run(

@@ -7,7 +7,7 @@ ENC_PATH = "onnx/trocr-base-printed/no-past/encoder_model.onnx"
 DEC_PATH = "onnx/trocr-base-printed/with-past/decoder_model.onnx"
 
 # 1. Load processor to prepare dummy image input
-processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-printed")
+processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-printed", use_fast=False)
 dummy_image = np.zeros((1, 3, 384, 384), dtype=np.float32)  # zeros OK for smoke test
 
 # 2. Create ONNX sessions
