@@ -37,7 +37,7 @@ class _OCRHomePageState extends State<OCRHomePage> {
   String _recognizedText = '';
 
   Future<void> _takePicture() async {
-    final file = await _picker.pickImage(source: ImageSource.camera);
+    final file = await _picker.pickImage(source: ImageSource.gallery);
     if (file == null) return;
 
     final bytes = await file.readAsBytes();

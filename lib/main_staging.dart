@@ -4,7 +4,6 @@ import 'package:smart_scan_amr/app/ocr_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  final ocrService = OCRService();
-  await ocrService.init();
+  final ocrService = await OCRService.create();
   runApp(MyApp(ocrService: ocrService));
 }

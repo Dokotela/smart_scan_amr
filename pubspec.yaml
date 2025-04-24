@@ -7,6 +7,8 @@ environment:
   sdk: ^3.5.0
 
 dependencies:
+  collection: ^1.19.1
+  crypto: ^3.0.6
   flutter:
     sdk: flutter
   flutter_localizations:
@@ -27,6 +29,8 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/models/TrOCRDecoder.onnx
-    - assets/models/TrOCREncoder.onnx
+    - assets/models/decoder-int8.onnx
+    - assets/models/encoder-int8.onnx
     - assets/models/vocab.json
+    - assets/models/tokenizer.json
+    - assets/models/test.jpg
