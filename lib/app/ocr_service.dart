@@ -3,11 +3,8 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:collection/collection.dart';
-import 'package:crypto/crypto.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:onnxruntime/onnxruntime.dart';
@@ -47,7 +44,7 @@ class OCRService {
 
     // Load quantized encoder & decoder
     _debugLog('Loading encoder model...');
-    final encBytes = await rootBundle.load('assets/models/encoder-int8.onnx');
+    final encBytes = await rootBundle.load('assets/models/encoder_int8.onnx');
     final encBytesList = Uint8List.sublistView(
       encBytes.buffer
           .asUint8List(encBytes.offsetInBytes, encBytes.lengthInBytes),
@@ -58,7 +55,7 @@ class OCRService {
     );
 
     _debugLog('Loading decoder model...');
-    final decBytes = await rootBundle.load('assets/models/decoder-int8.onnx');
+    final decBytes = await rootBundle.load('assets/models/decoder_int8.onnx');
     final decBytesList = Uint8List.sublistView(
       decBytes.buffer
           .asUint8List(decBytes.offsetInBytes, decBytes.lengthInBytes),

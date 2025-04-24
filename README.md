@@ -35,6 +35,51 @@ _\*Smart Scan Amr works on iOS, Android, Web, and Windows._
 
 ---
 
+## Create the TrOCR Model
+
+1. Install Optimum & Dependencies
+    - pip install optimum[onnxruntime]
+    - pip install accelerate
+
+2. Exported the "no-past" ONNX (encoder+decoder together)
+```bash
+optimum-cli export onnx \
+  --model microsoft/trocr-base-printed \
+  --framework pt \
+  --task image-to-text \
+  onnx/trocr-base-printed/no-past
+```
+
+3. Exported the "with-past" ONNX (for autoregressive decoding)
+```bash
+optimum-cli export onnx \
+  --model microsoft/trocr-base-printed \
+  --framework pt \
+  --task image-to-text-with-past \
+  onnx/trocr-base-printed/with-past
+```
+
+4. Ran ```test_trocr_onnx.py```
+    - load each ONNX with onnxruntime.InferenceSession, feed dummy inputs, and confirm the encoder outputs (1, 577, 768) and decoder logits (1, 1, 50265).
+
+5. Ran ```quantize_encoder_static.py```
+    - requires ```assets/calibration_images``` to be present and filled with images similar to expected input
+    - produces ```encoder_model_qdq.onnx```
+
+6. Ran ```quantize_decoder.py```
+    - produces ```decoder_model_quant.onnx```
+
+7. Smoke-tested encoder and decoder
+    - ran ```test_encoder_qdq.py```
+    - ran ```test_decoder_quant.py```
+
+8. Copy for Flutter
+    - ```cp python/onnx/trocr-base-printed/no-past/encoder_model_qdq.onnx assets/models/encoder_int8.onnx```
+    - ```cp python/onnx/trocr-base-printed/with-past/decoder_model_quant.onnx assets/models/decoder_int8.onnx```
+    - ```cp python/onnx/trocr-base-printed/no-past/vocab.json assets/models/vocab.json```
+    - ```cp python/onnx/trocr-base-printed/no-past/tokenizer.json assets/models/tokenizer.json```
+
+
 ## Running Tests 🧪
 
 To run all unit and widget tests use the following command:

@@ -29,8 +29,5 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/models/decoder-int8.onnx
-    - assets/models/encoder-int8.onnx
-    - assets/models/vocab.json
-    - assets/models/tokenizer.json
-    - assets/models/test.jpg
+    - assets/models/decoder_int8.onnx
+    - assets/models/encoder_int8.onnx
