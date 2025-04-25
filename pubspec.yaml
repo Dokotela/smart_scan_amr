@@ -18,6 +18,7 @@ dependencies:
   intl: ^0.19.0
   onnxruntime: ^1.4.1
   path_provider: ^2.1.5
+  sp_ai_simple_bpe_tokenizer: ^0.0.1+1
 
 dev_dependencies:
   flutter_test:
@@ -29,7 +30,4 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/models/decoder_int8.onnx
-    - assets/models/encoder_int8.onnx
-    - assets/models/tokenizer.json
-    - assets/models/vocab.json
+    - assets/models/
