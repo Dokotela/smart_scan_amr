@@ -61,7 +61,7 @@ def recognize_text(image_path):
     return predicted_text
 
 # Test on your images
-for image_path in ["hello_world.png", "goodbye_love.png"]:
+for image_path in ["hello_world.png", "goodbye_love.png", "121.png"]:
     try:
         text = recognize_text(image_path)
         print(f"Image: {image_path}")
