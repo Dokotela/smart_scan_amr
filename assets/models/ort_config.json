@@ -5,7 +5,7 @@
   "quantization": {
     "activations_dtype": "QUInt8",
     "activations_symmetric": false,
-    "format": "QOperator",
+    "format": "QDQ",
     "is_static": false,
     "mode": "IntegerOps",
     "nodes_to_exclude": [],

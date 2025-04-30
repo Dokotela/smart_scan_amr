@@ -30,4 +30,7 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/models/
+    - assets/models/decoder_model.onnx
+    - assets/models/encoder_model.onnx
+    - assets/models/tokenizer.json
+    - assets/models/vocab.json

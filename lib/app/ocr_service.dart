@@ -38,49 +38,70 @@ class OCRService {
   }
 
   Future<String> recognize(Uint8List imageBytes) async {
+    // 1) Image → encoder hidden states (unchanged)
     final image = img.decodeImage(imageBytes)!;
     final resized = img.copyResize(image, width: 384, height: 384);
     final rgbBytes = resized.getBytes(order: img.ChannelOrder.rgb);
     final inputData =
         Float32List.fromList(rgbBytes.map((b) => b / 255.0).toList());
-    final inputTensor = OrtValueTensor.createTensorWithDataList(
+    final encInput = OrtValueTensor.createTensorWithDataList(
       inputData,
       [1, 3, 384, 384],
     );
-    final runOptions = OrtRunOptions();
-    final encoderOutputs = await _encoderSession.runAsync(
-      runOptions,
-      {'pixel_values': inputTensor},
+    final encOutputs = await _encoderSession.runAsync(
+      OrtRunOptions(),
+      {'pixel_values': encInput},
     );
-    if (encoderOutputs == null || encoderOutputs.isEmpty) {
-      throw Exception('Encoder did not return any outputs');
-    }
-    final decoderOutputs = await _decoderSession.runAsync(
-      runOptions,
-      {'encoder_hidden_states': encoderOutputs[0]!},
-    );
-    final outputTensor = decoderOutputs![0]! as OrtValueTensor;
-    final logits = outputTensor.value as Float32List;
-    // assume logits shape is [1, seqLen, vocabSize]
-    final vocabSize = id2token.length;
-    final seqLen = logits.length ~/ vocabSize;
+    final encoderStates = encOutputs![0]! as OrtValueTensor;
 
-    // greedy decode
-    final tokenIds = List<int>.generate(seqLen, (i) {
-      final base = i * vocabSize;
-      var maxVal = logits[base];
-      var maxIdx = 0;
-      for (var j = 1; j < vocabSize; j++) {
-        if (logits[base + j] > maxVal) {
-          maxVal = logits[base + j];
-          maxIdx = j;
+    // 2) Prepare for decoder loop
+    // Find your special token IDs (adjust if your vocab uses different strings)
+    final bosId = id2token.entries.firstWhere((e) => e.value == '<s>').key;
+    final eosId = id2token.entries.firstWhere((e) => e.value == '</s>').key;
+
+    final decoded = [bosId];
+    final result = StringBuffer();
+    const maxLen = 128;
+
+    for (var step = 0; step < maxLen; step++) {
+      // 2a) Create input_ids tensor for current prefix
+      final inputIdsTensor = OrtValueTensor.createTensorWithDataList(
+        Int64List.fromList(decoded),
+        [1, decoded.length],
+      );
+
+      // 2b) Run decoder with both inputs
+      final decOutputs = await _decoderSession.runAsync(
+        OrtRunOptions(),
+        {
+          'input_ids': inputIdsTensor,
+          'encoder_hidden_states': encoderStates,
+        },
+      );
+      final logitsTensor = decOutputs![0]! as OrtValueTensor;
+      // 1) Cast down to the 3-D nested list
+      final nested = logitsTensor.value as List<List<List<double>>>;
+
+      // 2) Grab batch 0, then time-step (decoded.length-1)
+      final lastLogits = nested[0][decoded.length - 1];
+      // lastLogits is a List<double> of length == vocabSize
+
+      // 3) Do your arg-max on that List<double>
+      var nextId = 0;
+      var maxLogit = lastLogits[0];
+      for (var i = 1; i < lastLogits.length; i++) {
+        if (lastLogits[i] > maxLogit) {
+          maxLogit = lastLogits[i];
+          nextId = i;
         }
       }
-      return maxIdx;
-    });
 
-    // map IDs to tokens and concatenate
-    final result = tokenIds.map((id) => id2token[id] ?? '').join();
-    return result;
+      if (nextId == eosId) break; // done
+      decoded.add(nextId); // append to prefix
+      result.write(id2token[nextId]); // append token text
+    }
+
+    print('Recognized: $result');
+    return result.toString();
   }
 }
